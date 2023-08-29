@@ -2,9 +2,9 @@
 
 El objetivo es desplegar una infraestructura típica de OKD en el cloud de Azure, utilizando IaaS (Infraestructura como servicio).
 
-Las fuentes para este laboratorio está en la documentación de OKD: https://www.okd.io/
+Las fuentes para este laboratorio está en la documentación de OKD: [https://www.okd.io/](https://www.okd.io/)
 
-Y en el repositorio GitHub oficial del producto:  https://github.com/okd-project/okd
+Y en el repositorio GitHub oficial del producto:  [https://github.com/okd-project/okd](https://github.com/okd-project/okd)
 
 ## Hoja de ruta
 
@@ -22,8 +22,8 @@ Y en el repositorio GitHub oficial del producto:  https://github.com/okd-project
 
 Se descargan las siguientes herramientas:
 
-- https://github.com/okd-project/okd/releases/download/4.10.0-0.okd-2022-05-28-062148/openshift-client-linux-4.10.0-0.okd-2022-05-28-062148.tar.gz
-- https://github.com/okd-project/okd/releases/download/4.10.0-0.okd-2022-05-28-062148/openshift-install-linux-4.10.0-0.okd-2022-05-28-062148.tar.gz
+- [https://github.com/okd-project/okd/releases/download/4.10.0-0.okd-2022-05-28-062148/openshift-client-linux-4.10.0-0.okd-2022-05-28-062148.tar.gz](https://github.com/okd-project/okd/releases/download/4.10.0-0.okd-2022-05-28-062148/openshift-client-linux-4.10.0-0.okd-2022-05-28-062148.tar.gz)
+- [https://github.com/okd-project/okd/releases/download/4.10.0-0.okd-2022-05-28-062148/openshift-install-linux-4.10.0-0.okd-2022-05-28-062148.tar.gz](https://github.com/okd-project/okd/releases/download/4.10.0-0.okd-2022-05-28-062148/openshift-install-linux-4.10.0-0.okd-2022-05-28-062148.tar.gz)
 
 La versión 4.10.0-0.okd-2022-05-28 es la última versión de Mayo de 2022. La última version en la rama 4.10 es 4.10.0-0.okd-2022-07-09. Son tres versiones adelantes de la primera instalada.
 
@@ -68,7 +68,7 @@ para azure se debe usar el siguiente comando:
 
 Para la versión 4.10.0-0.okd-2022-05-28-062148 se debe descargar la imagen:
 
-```https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/35.20220327.3.0/x86_64/fedora-coreos-35.20220327.3.0-azure.x86_64.vhd.xz```
+[```https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/35.20220327.3.0/x86_64/fedora-coreos-35.20220327.3.0-azure.x86_64.vhd.xz```](https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/35.20220327.3.0/x86_64/fedora-coreos-35.20220327.3.0-azure.x86_64.vhd.xz)
 
 Localmente se debe descomprimir la imágen VHD, y luego se debe subir a un storage account, como un blob page, que permita acceso público, para que el instalador pueda acceder a la imagen.
 Se indica la URL de la imagen en una variable de entorno antes de ejecutar el instalador de OKD:
@@ -76,4 +76,3 @@ Se indica la URL de la imagen en una variable de entorno antes de ejecutar el in
 ```export OPENSHIFT_INSTALL_OS_IMAGE_OVERRIDE=https://<storageaccount>.blob.windows.net/<container>/fedora-coreos-35.20220327.3.0-azure.x86_64.vhd```
 
 ## Deploy
-
