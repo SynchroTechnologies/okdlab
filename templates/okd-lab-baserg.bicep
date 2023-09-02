@@ -1,6 +1,6 @@
 // Parameters
 param location string = resourceGroup().location
-param clusterFQDN string = 'okdlab.synchro.ar'
+param clusterFQDN string = 'okd.synchro.ar'
 param strgAccName string = 'synstrgacc0okdlab00'
 param containerName string = 'vhd'
 param tags object = resourceGroup().tags

@@ -1,7 +1,5 @@
 # Set environment variables
 export RESOURCE_GROUP_BASE_NAME?=okd-lab-base-rg
-export STORAGE_ACCOUNT_NAME?=synstrgacc0okdlab00
-export STORAGE_ACCOUNT_CONTAINER?=vhd
 export LOCATION?=canadacentral
 
 export OKD_INSTALLER_URL=https://github.com/okd-project/okd/releases/download/4.10.0-0.okd-2022-05-28-062148/openshift-install-linux-4.10.0-0.okd-2022-05-28-062148.tar.gz
