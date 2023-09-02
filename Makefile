@@ -2,8 +2,11 @@
 export RESOURCE_GROUP_BASE_NAME?=okd-lab-base-rg
 export LOCATION?=canadacentral
 
-export OKD_INSTALLER_URL=https://github.com/okd-project/okd/releases/download/4.10.0-0.okd-2022-05-28-062148/openshift-install-linux-4.10.0-0.okd-2022-05-28-062148.tar.gz
-export OKD_CLIENT_URL=https://github.com/okd-project/okd/releases/download/4.10.0-0.okd-2022-05-28-062148/openshift-client-linux-4.10.0-0.okd-2022-05-28-062148.tar.gz
+export STORAGE_ACCOUNT_NAME?=synstrgacc0okdlab00
+export STORAGE_ACCOUNT_CONTAINER?=vhd
+
+export OKD_INSTALLER_URL=https://github.com/okd-project/okd/releases/download/4.10.0-0.okd-2022-07-09-073606/openshift-install-linux-4.10.0-0.okd-2022-07-09-073606.tar.gz
+export OKD_CLIENT_URL=https://github.com/okd-project/okd/releases/download/4.10.0-0.okd-2022-07-09-073606/openshift-client-linux-4.10.0-0.okd-2022-07-09-073606.tar.gz
 
 export FCOS_IMAGE_VERSION=35.20220327.3.0
 export FCOS_IMAGE_URL=https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/$(FCOS_IMAGE_VERSION)/x86_64/fedora-coreos-$(FCOS_IMAGE_VERSION)-azure.x86_64.vhd.xz
