@@ -1,17 +1,25 @@
 # Set environment variables
-export RESOURCE_GROUP_BASE_NAME?=okd-lab-base-rg
+export INSTALLER_URL=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.12/openshift-install-linux.tar.gz
+export CLIENT_URL=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.12/openshift-client-linux.tar.gz
+
+export RESOURCE_GROUP_BASE_NAME?=ocp-labandreani-rg
 export LOCATION?=canadacentral
 
-export STORAGE_ACCOUNT_NAME?=synstrgacc0okdlab00
+export STORAGE_ACCOUNT_NAME?=andocplab0sa01
 export STORAGE_ACCOUNT_CONTAINER?=vhd
 
-export OKD_INSTALLER_URL=https://github.com/okd-project/okd/releases/download/4.11.0-0.okd-2023-01-14-152430/openshift-install-linux-4.11.0-0.okd-2023-01-14-152430.tar.gz
-export OKD_CLIENT_URL=https://github.com/okd-project/okd/releases/download/4.11.0-0.okd-2023-01-14-152430/openshift-client-linux-4.11.0-0.okd-2023-01-14-152430.tar.gz
+export SERVICE_PRINCIPAL_NAME?=ocp-ipi-sp
 
-export FCOS_IMAGE_VERSION=36.20220716.3.1
-export FCOS_IMAGE_URL=https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/$(FCOS_IMAGE_VERSION)/x86_64/fedora-coreos-$(FCOS_IMAGE_VERSION)-azure.x86_64.vhd.xz
+export DNS_ZONE_NAME?=ocp.labandreani.com
 
-export OPENSHIFT_INSTALL_OS_IMAGE_OVERRIDE=https://$(STORAGE_ACCOUNT_NAME).blob.core.windows.net/$(STORAGE_ACCOUNT_CONTAINER)/fedora-coreos-$(FCOS_IMAGE_VERSION)-azure.x86_64.vhd
+export TAG_CONTACT?=hugo.antolini@synchro-technologies.com
+export TAG_ENV?=LAB
+export TAG_DATE?=$(shell date +%Y-%m-%d)
+
+## export FCOS_IMAGE_VERSION=
+## export FCOS_IMAGE_URL=
+
+## export OPENSHIFT_INSTALL_OS_IMAGE_OVERRIDE=https://$(STORAGE_ACCOUNT_NAME).blob.core.windows.net/$(STORAGE_ACCOUNT_CONTAINER)/fedora-coreos-$(FCOS_IMAGE_VERSION)-azure.x86_64.vhd
 
 
 .DEFAULT_GOAL := help
@@ -21,7 +29,7 @@ validate-logged-to-azure:  ## Validate if you are logged to Azure
 	@az account show > /dev/null 2>&1 || (echo "You are not logged to Azure. Please run 'az login' first." && exit 1)
 
 help:  ## This help
-	@grep -hE '^[A-Za-z0-9_ \-]*?:.*##.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -hE '^[A-Za-z0-9_ \-]*?:.*##.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-35s\033[0m %s\n", $$1, $$2}'
 
 azure-list-resources: validate-logged-to-azure  ## List resources
 	@echo
@@ -47,27 +55,55 @@ azure-vm-stop: validate-logged-to-azure ## Stop lab VMs
 	@echo '----------------------------------'
 	@az vm deallocate --ids $(shell az vm list -d --query "[].id" -o tsv)
 
-deploy-base-resource-group: validate-logged-to-azure  ## Create base resource group with public dns needed for OKD IPI Install
+azure-deploy-base-rg: validate-logged-to-azure  ## Create base resource group with public dns needed for OKD IPI Install
 	@echo
 	@echo 'Creating resource group: ' $(RESOURCE_GROUP_NAME)
 	@echo '----------------------------------'
 	@az group create --name $(RESOURCE_GROUP_BASE_NAME) \
 	                 --location $(LOCATION) \
+					 --tags "CONTACT=$(TAG_CONTACT) ENV=$(TAG_ENV) DATE=$(TAG_DATE)" \
 					 --output table
+					 
 	@az deployment group create --resource-group $(RESOURCE_GROUP_BASE_NAME) \
-	                            --template-file ./templates/okd-lab-baserg.bicep \
-								--parameters ./templates/okd-lab-baserg.bicepparam \
+	                            --template-file ./templates/lab-baserg.bicep \
+								--parameters dnsZoneName=$(DNS_ZONE_NAME) \
+								--parameters strgAccName=$(STORAGE_ACCOUNT_NAME) \
 								--output table 
 
-get-okd-installer:  ## Get OKD installer
+azure-deploy-rbac-serviceprincipal: ## Deploy RBAC and Service Principal
 	@echo
-	@echo 'Getting OKD installer'
+	@echo 'Deploying RBAC Service Principal for OKD IPI Install'
+	@echo '----------------------------------'
+	az ad sp create-for-rbac --name $(SERVICE_PRINCIPAL_NAME) \
+	                          --role "Contributor" \
+							  --scopes /subscriptions/$(shell az account show --query 'id' -o tsv) \
+							  --years 3 \
+							  --output json > ./installer/$(SERVICE_PRINCIPAL_NAME).json
+							  
+	az role assignment create --role "User Access Administrator" \
+	                           --assignee $(shell jq -r '.appId' ./installer/*sp.json) \
+							   --scope /subscriptions/$(shell az account show --query 'id' -o tsv) \
+							   --output table
+
+openshift-get-installer:  ## Get OCP installer
+	@echo
+	@echo 'Getting OCP installer'
 	@echo '----------------------------------'
 	@-mkdir ./installer
 	@cd installer && \
-	wget $(OKD_INSTALLER_URL) -O okd-install.tar.gz && \
-	tar -xvf okd-install.tar.gz && \
-	rm okd-install.tar.gz README.md
+	wget $(INSTALLER_URL) -O ocp-install.tar.gz && \
+	tar -xvf ocp-install.tar.gz && \
+	rm ocp-install.tar.gz README.md
+
+openshift-get-oc:  ## Get OCP command line client
+	@echo
+	@echo 'Getting OCP installer'
+	@echo '----------------------------------'
+	@-mkdir ./installer
+	@cd installer && \
+	wget $(CLIENT_URL) -O ocp-client.tar.gz && \
+	tar -xvf ocp-client.tar.gz && \
+	rm ocp-client.tar.gz README.md
 
 get-fcos-image: ## Get Fedora CoreOS Image for Azure
 	@echo
@@ -89,28 +125,14 @@ upload-vhd-to-azure: ## Upload FCOS vhd image to storage account in Azure
 							--type page \
 							--output table
 
-deploy-rbac-serviceprincipal: ## Deploy RBAC and Service Principal
-	@echo
-	@echo 'Deploying RBAC Service Principal for OKD IPI Install'
-	@echo '----------------------------------'
-	@az ad sp create-for-rbac --name "okd-ipi-sp" \
-	                          --role "Contributor" \
-							  --scopes /subscriptions/$(shell az account show --query 'id' -o tsv) \
-							  --years 3 \
-							  --output json > ./installer/okd-ipi-sp.json
-	@az role assignment create --role "User Access Administrator" \
-	                           --assignee $(shell jq -r '.appId' ./installer/okd-ipi-sp.json) \
-							   --scope /subscriptions/$(shell az account show --query 'id' -o tsv) \
-							   --output table
-
 openshift-create-install-config: ## Create Openshift Installer Manifests
 	@echo
 	@echo 'Creating Openshift Installer configuration'
 	@echo '----------------------------------'
-	@./installer/openshift-install create install-config --dir=./installer/okd-ipi-install
+	@./installer/openshift-install create install-config --dir=./installer/ipi-install
 
 openshift-create-cluster:  ## Create Openshift Cluster
 	@echo
 	@echo 'Creating Openshift Cluster'
 	@echo '----------------------------------'
-	@./installer/openshift-install create cluster --dir=./installer/okd-ipi-install
+	@./installer/openshift-install create cluster --dir=./installer/ipi-install
