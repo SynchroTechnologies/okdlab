@@ -31,7 +31,7 @@ validate-logged-to-azure:  ## Validate if you are logged to Azure
 help:  ## This help
 	@grep -hE '^[A-Za-z0-9_ \-]*?:.*##.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-35s\033[0m %s\n", $$1, $$2}'
 
-azure-list-resources: validate-logged-to-azure  ## List resources
+azure-list-resourcegroups: validate-logged-to-azure  ## List resource groups in Azure
 	@echo
 	@echo 'Azure Account: ' $(shell az account show --query 'name' -o tsv)
 	@echo '----------------------------------'
@@ -85,6 +85,17 @@ azure-deploy-rbac-serviceprincipal: ## Deploy RBAC and Service Principal
 							   --scope /subscriptions/$(shell az account show --query 'id' -o tsv) \
 							   --output table
 
+azure-upload-vhd: ## Upload FCOS vhd image to storage account in Azure
+	@echo
+	@echo 'Uploading FCOS vhd image to storage account in Azure'
+	@echo '----------------------------------'
+	@az storage blob upload --account-name $(STORAGE_ACCOUNT_NAME) \
+	                        --container-name $(STORAGE_ACCOUNT_CONTAINER) \
+							--name fedora-coreos-$(FCOS_IMAGE_VERSION)-azure.x86_64.vhd \
+							--file ./installer/fedora-coreos-$(FCOS_IMAGE_VERSION)-azure.x86_64.vhd \
+							--type page \
+							--output table
+
 openshift-get-installer:  ## Get OCP installer
 	@echo
 	@echo 'Getting OCP installer'
@@ -105,7 +116,7 @@ openshift-get-oc:  ## Get OCP command line client
 	tar -xvf ocp-client.tar.gz && \
 	rm ocp-client.tar.gz README.md
 
-get-fcos-image: ## Get Fedora CoreOS Image for Azure
+openshift-get-fcos-image: ## Get Fedora CoreOS Image for Azure
 	@echo
 	@echo 'Getting Fedora CoreOS Image for Azure'
 	@echo '----------------------------------'
@@ -113,17 +124,6 @@ get-fcos-image: ## Get Fedora CoreOS Image for Azure
 	@cd ./installer && \
 	 wget $(FCOS_IMAGE_URL) -O ./fedora-coreos-$(FCOS_IMAGE_VERSION)-azure.x86_64.vhd.xz && \
 	 unxz ./fedora-coreos-$(FCOS_IMAGE_VERSION)-azure.x86_64.vhd.xz
-
-upload-vhd-to-azure: ## Upload FCOS vhd image to storage account in Azure
-	@echo
-	@echo 'Uploading FCOS vhd image to storage account in Azure'
-	@echo '----------------------------------'
-	@az storage blob upload --account-name $(STORAGE_ACCOUNT_NAME) \
-	                        --container-name $(STORAGE_ACCOUNT_CONTAINER) \
-							--name fedora-coreos-$(FCOS_IMAGE_VERSION)-azure.x86_64.vhd \
-							--file ./installer/fedora-coreos-$(FCOS_IMAGE_VERSION)-azure.x86_64.vhd \
-							--type page \
-							--output table
 
 openshift-create-install-config: ## Create Openshift Installer Manifests
 	@echo
