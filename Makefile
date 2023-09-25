@@ -10,7 +10,7 @@ export STORAGE_ACCOUNT_CONTAINER?=vhd
 
 export SERVICE_PRINCIPAL_NAME?=ocp-ipi-sp
 
-export DNS_ZONE_NAME?=ocp.labandreani.com
+export DNS_ZONE_NAME?=ocplab.ha.ar
 
 export TAG_CONTACT?=hugo.antolini@synchro-technologies.com
 export TAG_ENV?=LAB
