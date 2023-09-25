@@ -4,12 +4,32 @@
 
 ### Tareas Pre-Deploy
 
+Loguearse en Azure:
+
+```bash
+az login
+```
+
+Seleccionar la subscripción donde trabajar:
+
+```bash
+az account list -o table
+
+az account set -s <nombre subscripción>
+```
+
 ***Requerimientos:***
 
 - **Service Princiapl**: En la subscripción donde se despliega la solución debe tener los roles: ```Contributor``` y ```User Access Administrator```
 - **Zona DNS Pública**: Asignar un subdominio para el uso del cluster. Es necesario crear la zona pública en un resource group, y delegar a la zona principal si fuera necesario.
 
 ***Paso a Paso:***
+
+El archivo ```Makefile``` agrupa todos los scripts necesarios para el deploy paso a paso.
+
+```bash
+make help    ## Muestra todos los scripts disponibles
+```
 
 #### Ajustar las variables para definir:
 
