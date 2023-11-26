@@ -2,15 +2,15 @@
 export INSTALLER_URL=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.12/openshift-install-linux.tar.gz
 export CLIENT_URL=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.12/openshift-client-linux.tar.gz
 
-export RESOURCE_GROUP_BASE_NAME?=ocp-labandreani-rg
+export RESOURCE_GROUP_BASE_NAME?=okd-lab-base-rg
 export LOCATION?=canadacentral
 
-export STORAGE_ACCOUNT_NAME?=andocplab0sa01
+export STORAGE_ACCOUNT_NAME?=synstrgacc0okdlab00
 export STORAGE_ACCOUNT_CONTAINER?=vhd
 
-export SERVICE_PRINCIPAL_NAME?=ocp-ipi-sp
+export SERVICE_PRINCIPAL_NAME?=okdlab
 
-export DNS_ZONE_NAME?=ocplab.ha.ar
+export DNS_ZONE_NAME?=okd.synchro.ar
 
 export TAG_CONTACT?=hugo.antolini@synchro-technologies.com
 export TAG_ENV?=LAB
