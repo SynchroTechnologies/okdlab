@@ -1,6 +1,6 @@
 # Set environment variables
-export INSTALLER_URL=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.12/openshift-install-linux.tar.gz
-export CLIENT_URL=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.12/openshift-client-linux.tar.gz
+export INSTALLER_URL=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.14/openshift-install-linux.tar.gz
+export CLIENT_URL=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable-4.14/openshift-client-linux.tar.gz
 
 export RESOURCE_GROUP_BASE_NAME?=okd-lab-base-rg
 export LOCATION?=canadacentral
